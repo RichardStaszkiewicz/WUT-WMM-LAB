@@ -1,0 +1,32 @@
+1. Twierdzneie Parsevala
+Można korzystać z numpy aby wyznaczyć widmo (są funkcje)
+Pojęcia mocy sygnału itd. czym jest twierdzenie persevala to do wykładu
+
+podpunkt b
+Trzeba wyznaczyć ręcznie splot kołowy z definicji
+Następnie wyznaczyć z pomocą dyskretnej transformacji Fouriera
+Jak wyjdzie to samo, mamy udowodnione twierdzenie
+Nie ma wniosków...
+
+2. Wpływ przesunięcia w czsaie widma
+Przesuwamy w czasie ten sygnał (modyfikowali argument funkcji cosinus)
+N = 0, 1/4, 1/2, 3/4
+Jak wyznaczamy funkcją fft, zaobserwujemy że widmo fazowe ma niepokojący kształt szumu
+ale cosinus ma 2 prążki (zarówno na widmie fazowym i amplitudowym)
+niedokładność prążków na fazowym dlatego, że błędy obliczeniowe. Należy wyzerować fazy
+prążków, które nie mają dużej amplitudy.
+Komentarz - czemu się tak zachowuje, skąd się to bierze itd
+
+3. Wpływ dopełnienia zerami
+Mod to dzielenie modulo. bierzemy sygnał i dopełniamy go jakąś ilością 0.
+W kolejnych próbach doklejamy zera i liczymy wszystkie widma
+Będą te widma miały coraz większą ilość prążków
+Wnioski
+
+4. Sygnał rzeczywisty z sinusów -> Rzeczywisty ma tylko 1 prążek jak ma 3000hz to w tym miejscu
+Dla takich danych narysować widmo sygnału. Czy dla takiej ilości próbkowania mamy wyciek widma?
+Sytuacja czy ulegnie zmianie jeśli zwiększymy? [wykłady]
+
+
+Jeżeli wychodzi 4 razy więcej niż spodziewane. Jak się dzieli przez N,
+pierwszy prążek pokazuje średnią sygnału dlatego.
