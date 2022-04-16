@@ -123,6 +123,68 @@ class monochromatic(every_image):
 
         return [H_ll, H_lh, H_hl, H_hh]
 
+
+class colourful(every_image):
+    def __init__(self, dir: str) -> None:
+        super().__init__(dir)
+
+    def entropy(self):
+        image_R = self.image[:, :, 2] ### cv2.imread() zwraca obrazy w formacie BGR
+        image_G = self.image[:, :, 1]
+        image_B = self.image[:, :, 0]
+
+        hist_R = cv2.calcHist([image_R], [0], None, [256], [0, 256]).flatten()
+        hist_G = cv2.calcHist([image_G], [0], None, [256], [0, 256]).flatten()
+        hist_B = cv2.calcHist([image_B], [0], None, [256], [0, 256]).flatten()
+
+        return [self.calc_entropy(hist_R), self.calc_entropy(hist_G), self.calc_entropy(hist_B)]
+
+    def YUV(self):
+        image_YUV = cv2.cvtColor(self.image, cv2.COLOR_BGR2YUV)
+        self.printi(image_YUV, "image_YUV")
+
+        hist_Y = cv2.calcHist([image_YUV[:, :, 0]], [0], None, [256], [0, 256]).flatten()
+        hist_U = cv2.calcHist([image_YUV[:, :, 1]], [0], None, [256], [0, 256]).flatten()
+        hist_V = cv2.calcHist([image_YUV[:, :, 2]], [0], None, [256], [0, 256]).flatten()
+
+        H_Y = self.calc_entropy(hist_Y)
+        H_U = self.calc_entropy(hist_U)
+        H_V = self.calc_entropy(hist_V)
+
+        self.error_hist_save(hist_Y, "lab3-photo-static-features/col_Y-hist.txt")
+        self.error_hist_save(hist_U, "lab3-photo-static-features/col_U-hist.txt")
+        self.error_hist_save(hist_V, "lab3-photo-static-features/col_V-hist.txt")
+        return [H_Y, H_U, H_V]
+
+    def RD_curve(self, qualities):
+        xx = [] ### tablica na wartości osi X -> bitrate
+        ym = [] ### tablica na wartości osi Y dla MSE
+        yp = [] ### tablica na wartości osi Y dla PSNR
+        for quality in qualities: ### wartości dla parametru 'quality' należałoby dobrać tak, aby uzyskać 'gładkie' wykresy...
+            out_file_name = f"lab3-photo-static-features/charts/color/out_image_q{quality:03d}.jpg"
+            """ Zapis do pliku w formacie .jpg z ustaloną 'jakością' """
+            cv2.imwrite(out_file_name, self.image, (cv2.IMWRITE_JPEG_QUALITY, quality))
+            """ Odczyt skompresowanego obrazu, policzenie bitrate'u i PSNR """
+            image_compressed = cv2.imread(out_file_name, cv2.IMREAD_UNCHANGED)
+            bitrate = 8*os.stat(out_file_name).st_size/(self.image.shape[0]*self.image.shape[1]) ### image.shape == image_compressed.shape
+            mse, psnr = self.calc_mse_psnr(self.image, image_compressed)
+            """ Zapamiętanie wyników do pózniejszego wykorzystania """
+            xx.append(bitrate)
+            ym.append(mse)
+            yp.append(psnr)
+
+        self.error_hist_save(xx, "lab3-photo-static-features/xx.txt")
+        self.error_hist_save(ym, "lab3-photo-static-features/ym.txt")
+        self.error_hist_save(yp, "lab3-photo-static-features/yp.txt")
+
+
+    def calc_mse_psnr(self, img1, img2):
+        imax = 255.**2
+        mse = ((img1.astype(np.float64)-img2)**2).sum()/img1.size ###img1.size - liczba elementów w img1, ==img1.shape[0]*img1.shape[1] dla obrazów mono, ==img1.shape[0]*img1.shape[1]*img1.shape[2] dla obrazów barwnych
+        psnr = 10.0*np.log10(imax/mse)
+        return (mse, psnr)
+
+
 if __name__ == "__main__":
     mono = monochromatic("lab3-photo-static-features/latarnia2_mono.png")
     print(f"a) Bits per pixle in PNG compression: {mono.bit_per_px()} bit/px")
@@ -132,4 +194,11 @@ if __name__ == "__main__":
     print(f"c) H(differential) = {mono.differential_image():.4f}")
     entropy = mono.dwt_description()
     print(f"H(LL) = {entropy[0]:.4f} \nH(LH) = {entropy[1]:.4f} \nH(HL) = {entropy[2]:.4f} \nH(HH) = {entropy[3]:.4f} \nH_śr = {sum(entropy)/len(entropy):.4f}")
-    pass
+
+    col = colourful("lab3-photo-static-features/latarnia2_col.png")
+    entr = col.entropy()
+    print(f"a) RGB entropy:\nH(R) = {entr[0]:.4f} \nH(G) = {entr[1]:.4f} \nH(B) = {entr[2]:.4f} \nH_śr = {(sum(entr))/len(entr):.4f}")
+    entr = col.YUV()
+    print(f"a) YUV entropy:\nH(Y) = {entr[0]:.4f} \nH(U) = {entr[1]:.4f} \nH(V) = {entr[2]:.4f} \nH_śr = {(sum(entr))/len(entr):.4f}")
+
+    col.RD_curve([90, 80, 70, 60, 50, 40, 30, 20, 10])

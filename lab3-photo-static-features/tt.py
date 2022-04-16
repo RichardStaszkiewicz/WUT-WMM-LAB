@@ -70,5 +70,55 @@ def velv_hist(dirs):
     plt.xlim([-255, 255])
     plt.show()
 
+def YUV_hist(dirs):
+    plt.figure()
+    for dir, col in zip(dirs, ["yellow", "blue", "red"]):
+        x = []
+        with open(dir, "r+") as handle:
+            c = handle.readline()
+            while c:
+                c = float(c)
+                x.append(c)
+                c = handle.readline()
+        plt.plot(x, color=col)
+    plt.title("hist YUV")
+    plt.xlim([0, 255])
+    plt.show()
+
+def RD_curve(dirs):
+    fig = plt.figure()
+    t = []
+    for dir in dirs:
+        x = []
+        with open(dir, "r+") as handle:
+            c = handle.readline()
+            while c:
+                c = float(c)
+                x.append(c)
+                c = handle.readline()
+        t.append(np.array(x))
+    xx, ym, yp = t
+    txt = [str(x) for x in [90, 80, 70, 60, 50, 40, 30, 20, 10]]
+    fig.set_figwidth(fig.get_figwidth()*2)
+    plt.suptitle("Charakterystyki R-D")
+    plt.subplot(1, 2, 1)
+    plt.plot(xx, ym, "-.")
+    for i in range(len(txt)):
+        plt.annotate(txt[i], (xx[i], ym[i]))
+    plt.title("MSE(R)")
+    plt.xlabel("bitrate")
+    plt.ylabel("MSE", labelpad=0)
+    plt.subplot(1, 2, 2)
+    plt.plot(xx, yp, "-o")
+    for i in range(len(txt)):
+        plt.annotate(txt[i], (xx[i], yp[i]))
+    plt.title("PSNR(R)")
+    plt.xlabel("bitrate")
+    plt.ylabel("PSNR [dB]", labelpad=0)
+    plt.show()
+
 # diff_hist('lab3-photo-static-features/mono_diff-hist.txt')
-velv_hist(["lab3-photo-static-features/hist_ll.txt", "lab3-photo-static-features/hist_lh.txt", "lab3-photo-static-features/hist_hl.txt", "lab3-photo-static-features/hist_hh.txt"])
+# velv_hist(["lab3-photo-static-features/hist_ll.txt", "lab3-photo-static-features/hist_lh.txt", "lab3-photo-static-features/hist_hl.txt", "lab3-photo-static-features/hist_hh.txt"])
+# YUV_hist(["lab3-photo-static-features/col_Y-hist.txt", "lab3-photo-static-features/col_U-hist.txt", "lab3-photo-static-features/col_V-hist.txt",])
+dirs = [f"lab3-photo-static-features/{x}.txt" for x in ["xx", "ym", "yp"]]
+RD_curve(dirs)
