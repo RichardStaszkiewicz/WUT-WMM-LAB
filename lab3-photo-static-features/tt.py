@@ -117,8 +117,8 @@ def RD_curve(dirs):
     plt.ylabel("PSNR [dB]", labelpad=0)
     plt.show()
 
-# diff_hist('lab3-photo-static-features/mono_diff-hist.txt')
-# velv_hist(["lab3-photo-static-features/hist_ll.txt", "lab3-photo-static-features/hist_lh.txt", "lab3-photo-static-features/hist_hl.txt", "lab3-photo-static-features/hist_hh.txt"])
-# YUV_hist(["lab3-photo-static-features/col_Y-hist.txt", "lab3-photo-static-features/col_U-hist.txt", "lab3-photo-static-features/col_V-hist.txt",])
+diff_hist('lab3-photo-static-features/mono_diff-hist.txt')
+velv_hist(["lab3-photo-static-features/hist_ll.txt", "lab3-photo-static-features/hist_lh.txt", "lab3-photo-static-features/hist_hl.txt", "lab3-photo-static-features/hist_hh.txt"])
+YUV_hist(["lab3-photo-static-features/col_Y-hist.txt", "lab3-photo-static-features/col_U-hist.txt", "lab3-photo-static-features/col_V-hist.txt",])
 dirs = [f"lab3-photo-static-features/{x}.txt" for x in ["xx", "ym", "yp"]]
 RD_curve(dirs)

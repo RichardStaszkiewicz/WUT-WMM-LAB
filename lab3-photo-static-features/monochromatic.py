@@ -14,23 +14,15 @@ class every_image(object):
         return 8 * os.path.getsize(self.dir) / (self.image.shape[0] * self.image.shape[1])
 
     def calc_entropy(self, hist):
-        pdf = hist/hist.sum() ### normalizacja histogramu -> rozkład prawdopodobieństwa; UWAGA: niebezpieczeństwo '/0' dla 'zerowego' histogramu!!!
-        # entropy = -(pdf*np.log2(pdf)).sum() ### zapis na tablicach, ale problem z '/0'
+        pdf = hist/hist.sum()
         entropy = -sum([x*np.log2(x) for x in pdf if x != 0])
         return entropy
 
     def printi(self, img=None, img_title="image"):
-        """ Pomocnicza funkcja do wypisania informacji o obrazie. """
         img = self.image if img is None else img
         print(f"{img_title}, wymiary: {img.shape}, typ danych: {img.dtype}, wartości: {img.min()} - {img.max()}")
 
     def cv_imshow(self, img=None, img_title="image", dir=None):
-        """
-        Funkcja do wyświetlania obrazu w wykorzystaniem okna OpenCV.
-        Wykonywane jest przeskalowanie obrazu z rzeczywistymi lub 16-bitowymi całkowitoliczbowymi wartościami pikseli,
-        żeby jedną funkcją wywietlać obrazy różnych typów.
-        """
-        # cv2.namedWindow(img_title, cv2.WINDOW_AUTOSIZE) # cv2.WINDOW_NORMAL
         img = self.image if img is None else img
         dir = "./imshow.png" if dir is None else dir
         if (img.dtype == np.float32) or (img.dtype == np.float64):
@@ -39,7 +31,7 @@ class every_image(object):
             img_ = img*128
         else:
             img_ = img
-        cv2.imwrite(dir, img) # zapis
+        cv2.imwrite(dir, img_) # zapis
 
     def calc_hist(self, img=None):
         img = self.image if img is None else img
