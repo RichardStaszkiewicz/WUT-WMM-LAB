@@ -170,13 +170,10 @@ class colourful(every_image):
         yp = [] ### tablica na wartości osi Y dla PSNR
         for quality in qualities: ### wartości dla parametru 'quality' należałoby dobrać tak, aby uzyskać 'gładkie' wykresy...
             out_file_name = f"lab3-photo-static-features/charts/color/out_image_q{quality:03d}.jpg"
-            """ Zapis do pliku w formacie .jpg z ustaloną 'jakością' """
             cv2.imwrite(out_file_name, self.image, (cv2.IMWRITE_JPEG_QUALITY, quality))
-            """ Odczyt skompresowanego obrazu, policzenie bitrate'u i PSNR """
             image_compressed = cv2.imread(out_file_name, cv2.IMREAD_UNCHANGED)
-            bitrate = 8*os.stat(out_file_name).st_size/(self.image.shape[0]*self.image.shape[1]) ### image.shape == image_compressed.shape
+            bitrate = 8*os.stat(out_file_name).st_size/(self.image.shape[0]*self.image.shape[1])
             mse, psnr = self.calc_mse_psnr(self.image, image_compressed)
-            """ Zapamiętanie wyników do pózniejszego wykorzystania """
             xx.append(bitrate)
             ym.append(mse)
             yp.append(psnr)
