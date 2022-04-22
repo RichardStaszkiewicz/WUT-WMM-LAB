@@ -1,3 +1,4 @@
+from cProfile import label
 import readline
 import matplotlib.pyplot as plt
 import numpy as np
@@ -72,7 +73,7 @@ def velv_hist(dirs):
 
 def YUV_hist(dirs):
     plt.figure()
-    for dir, col in zip(dirs, ["yellow", "blue", "red"]):
+    for dir, col, d in zip(dirs, ["green", "blue", "red"], ["Y", "U", "V"]):
         x = []
         with open(dir, "r+") as handle:
             c = handle.readline()
@@ -80,8 +81,9 @@ def YUV_hist(dirs):
                 c = float(c)
                 x.append(c)
                 c = handle.readline()
-        plt.plot(x, color=col)
+        plt.plot(x, color=col, label=d)
     plt.title("hist YUV")
+    plt.legend()
     plt.xlim([0, 255])
     plt.show()
 
