@@ -71,9 +71,9 @@ def velv_hist(dirs):
     plt.xlim([-255, 255])
     plt.show()
 
-def YUV_hist(dirs):
+def YUV_hist(dirs, c=["Y", "U", "V"], t="YUV"):
     plt.figure()
-    for dir, col, d in zip(dirs, ["green", "blue", "red"], ["Y", "U", "V"]):
+    for dir, col, d in zip(dirs, ["blue", "green", "red"], c):
         x = []
         with open(dir, "r+") as handle:
             c = handle.readline()
@@ -82,7 +82,7 @@ def YUV_hist(dirs):
                 x.append(c)
                 c = handle.readline()
         plt.plot(x, color=col, label=d)
-    plt.title("hist YUV")
+    plt.title(f"hist {t}")
     plt.legend()
     plt.xlim([0, 255])
     plt.show()
@@ -121,6 +121,7 @@ def RD_curve(dirs):
 
 diff_hist('lab3-photo-static-features/mono_diff-hist.txt')
 velv_hist(["lab3-photo-static-features/hist_ll.txt", "lab3-photo-static-features/hist_lh.txt", "lab3-photo-static-features/hist_hl.txt", "lab3-photo-static-features/hist_hh.txt"])
-YUV_hist(["lab3-photo-static-features/col_Y-hist.txt", "lab3-photo-static-features/col_U-hist.txt", "lab3-photo-static-features/col_V-hist.txt",])
+YUV_hist(["lab3-photo-static-features/col_Y-hist.txt", "lab3-photo-static-features/col_U-hist.txt", "lab3-photo-static-features/col_V-hist.txt"])
+YUV_hist(["lab3-photo-static-features/col_B-hist.txt", "lab3-photo-static-features/col_G-hist.txt", "lab3-photo-static-features/col_R-hist.txt"], c=["B", "G", "R"], t="RGB")
 dirs = [f"lab3-photo-static-features/{x}.txt" for x in ["xx", "ym", "yp"]]
 RD_curve(dirs)

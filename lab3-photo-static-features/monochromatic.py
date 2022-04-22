@@ -149,6 +149,21 @@ class colourful(every_image):
         self.error_hist_save(hist_V, "lab3-photo-static-features/col_V-hist.txt")
         return [H_Y, H_U, H_V]
 
+    def RGB(self, img=None):
+        img = self.image if img is None else img
+        hist_B = cv2.calcHist([img[:, :, 0]], [0], None, [256], [0, 256]).flatten()
+        hist_G = cv2.calcHist([img[:, :, 1]], [0], None, [256], [0, 256]).flatten()
+        hist_R = cv2.calcHist([img[:, :, 2]], [0], None, [256], [0, 256]).flatten()
+
+        H_B = self.calc_entropy(hist_B)
+        H_G = self.calc_entropy(hist_G)
+        H_R = self.calc_entropy(hist_R)
+
+        self.error_hist_save(hist_B, "lab3-photo-static-features/col_B-hist.txt")
+        self.error_hist_save(hist_G, "lab3-photo-static-features/col_G-hist.txt")
+        self.error_hist_save(hist_R, "lab3-photo-static-features/col_R-hist.txt")
+        return [H_B, H_G, H_R]
+
     def RD_curve(self, qualities):
         xx = [] ### tablica na wartości osi X -> bitrate
         ym = [] ### tablica na wartości osi Y dla MSE
@@ -192,6 +207,8 @@ if __name__ == "__main__":
     entr = col.entropy()
     print(f"a) RGB entropy:\nH(R) = {entr[0]:.4f} \nH(G) = {entr[1]:.4f} \nH(B) = {entr[2]:.4f} \nH_śr = {(sum(entr))/len(entr):.4f}")
     entr = col.YUV()
-    print(f"a) YUV entropy:\nH(Y) = {entr[0]:.4f} \nH(U) = {entr[1]:.4f} \nH(V) = {entr[2]:.4f} \nH_śr = {(sum(entr))/len(entr):.4f}")
+    print(f"b) YUV entropy:\nH(Y) = {entr[0]:.4f} \nH(U) = {entr[1]:.4f} \nH(V) = {entr[2]:.4f} \nH_śr = {(sum(entr))/len(entr):.4f}")
+    entr = col.RGB()
+    print(f"c) RGB entropy:\nH(B) = {entr[0]:.4f} \nH(G) = {entr[1]:.4f} \nH(R) = {entr[2]:.4f} \nH_śr = {(sum(entr))/len(entr):.4f}")
 
     col.RD_curve([90, 80, 70, 60, 50, 40, 30, 20, 10])
