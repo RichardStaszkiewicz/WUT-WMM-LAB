@@ -25,12 +25,12 @@ class every_image(object):
     def cv_imshow(self, img=None, img_title="image", dir=None):
         img = self.image if img is None else img
         dir = "./imshow.png" if dir is None else dir
-        if (img.dtype == np.float32) or (img.dtype == np.float64):
-            img_ = img / 255
-        elif img.dtype == np.int16:
-            img_ = img*128
-        else:
-            img_ = img
+        # if (img.dtype == np.float32) or (img.dtype == np.float64):
+        #     img_ = img / 255
+        # # elif img.dtype == np.int16:
+        # #     img_ = img*128
+        # else:
+        img_ = img
         cv2.imwrite(dir, img_) # zapis
 
     def calc_hist(self, img=None):
@@ -72,12 +72,13 @@ class monochromatic(every_image):
         return H_image
 
     def differential_image(self):
-        img_tmp1 = self.image[:, 1:]  ### wszystkie wiersze (':'), kolumny od 'pierwszej' do ostatniej ('1:')
-        img_tmp2 = self.image[:, :-1] ### wszystkie wiersze, kolumny od 'zerowej' do przedostatniej (':-1')
+        img_tmp1 = self.image[:, 1:]
+        img_tmp2 = self.image[:, :-1]
         image_hdiff = cv2.addWeighted(img_tmp1, 1, img_tmp2, -1, 0, dtype=cv2.CV_16S)
-        image_hdiff_0 = cv2.addWeighted(self.image[:, 0], 1, 0, 0, -127, dtype=cv2.CV_16S) ### od 'zerowej' kolumny obrazu oryginalnego odejmowana stała wartość '127'
-        image_hdiff = np.hstack((image_hdiff_0, image_hdiff)) ### połączenie tablic w kierunku poziomym, czyli 'kolumna za kolumną'
-        self.cv_imshow(image_hdiff, "image_hdiff", dir="lab3-photo-static-features/charts/differential/mono_diff.png")             ### zdefiniowana funkcja pomocnicza odpowiednio 'obsługuje' obrazy z 16-bitowymi wartościami
+        image_hdiff_0 = cv2.addWeighted(self.image[:, 0], 1, 0, 0, -127, dtype=cv2.CV_16S)
+        image_hdiff = np.hstack((image_hdiff_0, image_hdiff))
+        self.printi(image_hdiff)
+        self.cv_imshow(image_hdiff + 128, "image_hdiff", dir="lab3-photo-static-features/charts/differential/mono_diff.png")
 
         hist_image = self.calc_hist()
         hist_diff = cv2.calcHist([(image_hdiff+255).astype(np.uint16)], [0], None, [511], [0, 511]).flatten()
@@ -91,12 +92,12 @@ class monochromatic(every_image):
         ll, lh, hl, hh = self.dwt(self.image)
 
         self.cv_imshow(ll, "LL2", "lab3-photo-static-features/charts/wavelet/LL.png")
-        self.cv_imshow(cv2.multiply(lh, 2), "LH2", "lab3-photo-static-features/charts/wavelet/LH.png") ### cv2.multiply() -> zwiększenie kontrastu obrazów 'H', żeby lepiej uwidocznić
-        self.cv_imshow(cv2.multiply(hl, 2), "HL2", "lab3-photo-static-features/charts/wavelet/HL.png")
-        self.cv_imshow(cv2.multiply(hh, 2), "HH2", "lab3-photo-static-features/charts/wavelet/HH.png")
+        self.cv_imshow(cv2.multiply(lh, 2) + 128, "LH2", "lab3-photo-static-features/charts/wavelet/LH.png")
+        self.cv_imshow(cv2.multiply(hl, 2) + 128, "HL2", "lab3-photo-static-features/charts/wavelet/HL.png")
+        self.cv_imshow(cv2.multiply(hh, 2) + 128, "HH2", "lab3-photo-static-features/charts/wavelet/HH.png")
 
         hist_ll = cv2.calcHist([ll], [0], None, [256], [0, 256]).flatten()
-        hist_lh = cv2.calcHist([(lh+255).astype(np.uint16)], [0], None, [511], [0, 511]).flatten() ### zmiana zakresu wartości i typu danych ze względu na cv2.calcHist() (jak wcześniej przy obrazach różnicowych)
+        hist_lh = cv2.calcHist([(lh+255).astype(np.uint16)], [0], None, [511], [0, 511]).flatten()
         hist_hl = cv2.calcHist([(hl+255).astype(np.uint16)], [0], None, [511], [0, 511]).flatten()
         hist_hh = cv2.calcHist([(hh+255).astype(np.uint16)], [0], None, [511], [0, 511]).flatten()
         H_ll = super().calc_entropy(hist_ll)
