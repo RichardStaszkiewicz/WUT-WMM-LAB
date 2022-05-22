@@ -6,10 +6,11 @@
 import cv2
 #from google.colab.patches import cv2_imshow
 import dlib
+from timeit import default_timer as timer
 
 """## Obraz testowy"""
 
-img = cv2.imread("2_Demonstration_Demonstration_Or_Protest_2_1.jpg")
+img = cv2.imread("source/36_Football_americanfootball_ball_36_59.jpg")
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -23,9 +24,11 @@ Opracowano na podstawie: https://www.pyimagesearch.com/2021/04/05/opencv-face-de
 
 haar_detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 
+start = timer()
 rects = haar_detector.detectMultiScale(gray, scaleFactor=1.05,
 	                                minNeighbors=5, minSize=(30, 30),
 	                                flags=cv2.CASCADE_SCALE_IMAGE)
+print(f"HAAR Time = {timer() - start}s")
 
 img_haar = img.copy()
 for (x, y, w, h) in rects:
@@ -40,7 +43,9 @@ Opracowano na podstawie: https://www.pyimagesearch.com/2021/04/19/face-detection
 
 hog_svm_detector = dlib.get_frontal_face_detector()
 
+start = timer()
 hog_svm_rects = hog_svm_detector(rgb, 1)
+print(f"HOG-SVM Time = {timer() - start}s")
 
 def convert_and_trim_bb(image, rect):
 	# extract the starting and ending (x, y)-coordinates of the
@@ -66,7 +71,7 @@ hog_svm_boxes = [convert_and_trim_bb(img, r) for r in hog_svm_rects]
 img_hog_svm = img.copy()
 for (x, y, w, h) in hog_svm_boxes:
 	cv2.rectangle(img_hog_svm, (x, y), (x + w, y + h), (0, 255, 0), 2)
- 
+
 cv2.imshow("img_hog_svm", img_hog_svm)
 
 """
@@ -77,15 +82,22 @@ Opracowano na podstawie: https://www.pyimagesearch.com/2021/04/19/face-detection
 
 cnn_detector = dlib.cnn_face_detection_model_v1('mmod_human_face_detector.dat')
 
+start = timer()
 cnn_rects = cnn_detector(rgb, 1)
+print(f"CNN Time = {timer() - start}s")
 
 cnn_boxes = [convert_and_trim_bb(img, r.rect) for r in cnn_rects]
 
 img_cnn = img.copy()
 for (x, y, w, h) in cnn_boxes:
 	cv2.rectangle(img_cnn, (x, y), (x + w, y + h), (0, 255, 0), 2)
- 
+
 cv2.imshow("img_cnn", img_cnn)
 
+print("ended")
+
 cv2.waitKey(0)
-cv2.destroyAllWindows()
+
+while True:
+	pass
+# cv2.destroyAllWindows()
