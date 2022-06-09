@@ -36,12 +36,49 @@ class RobotWindow(BaseWindowConfig):
         )
 
         # Head
-        # Set the color to pink
-        self.var_color.value = (0.9, 0.0, 0.9)
-
-        # Apply translation bu (0, 0, 5)
-        move = Matrix44.from_translation((0.0, 0.0, 5.0))
-
+        self.var_color.value = (0.9, 0.0, 0.9) # Set the color to pink
+        move = Matrix44.from_translation((0.0, 0.0, 5.0)) # Apply translation bu (0, 0, 5)
         self.var_pvm.write((projection * lookat * move).astype("f4"))
         self.sphere_link.render()
 
+        # Torso
+        self.var_color.value = (0.05, 0.8, 0.05) # Set the color to green
+        move = Matrix44.from_translation((0.0, 0.0, 2.0)) # Apply translation by (0, 0, 2)
+        move *= Matrix44.from_scale((1.0, 1.0, 2.0))
+        self.var_pvm.write((projection * lookat * move).astype("f4"))
+        self.cube_link.render()
+
+        # Arms
+        ## Right
+        self.var_color.value = (0.2, 0.2, 0.2) # Set the color to gray
+        move = Matrix44.from_translation((0.0, -3.0, 3.0))
+        move *= Matrix44.from_x_rotation(3.14 / 4.0)
+        move *= Matrix44.from_scale((0.5, 0.5, 1.25))
+        self.var_pvm.write((projection * lookat * move).astype("f4"))
+        self.cube_link.render()
+
+        ## Left
+        self.var_color.value = (0.2, 0.2, 0.2)
+        move = Matrix44.from_translation((0.0, 3.0, 3.0))
+        move *= Matrix44.from_x_rotation(3.14 / -4.0)
+        move *= Matrix44.from_scale((0.5, 0.5, 1.25))
+        self.var_pvm.write((projection * lookat * move).astype("f4"))
+        self.cube_link.render()
+
+        # Legs
+        ## Right
+        self.var_color.value = (1, 0.1, 0.0)
+        move = Matrix44.from_translation((0.0, -2.0, -1.5))
+        move *= Matrix44.from_x_rotation(3.14 / 6.0)
+        move *= Matrix44.from_scale((0.5, 0.5, 1.75))
+        self.var_pvm.write((projection * lookat * move).astype("f4"))
+        self.cube_link.render()
+
+        ## Left
+        self.var_color.value = (1, 0.1, 0.0)
+        move = Matrix44.from_translation((0.0, 2.0, -1.5))
+        move *= Matrix44.from_x_rotation(3.14 / -6.0)
+        move *= Matrix44.from_scale((0.5, 0.5, 1.75))
+
+        self.var_pvm.write((projection * lookat * move).astype("f4"))
+        self.cube_link.render()
